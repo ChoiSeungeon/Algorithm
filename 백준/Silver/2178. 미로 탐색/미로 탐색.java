@@ -1,77 +1,59 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class Main {
 
-	static int[][] map;
-	static boolean[][] visited;
-	static int[][] dist;
+    static int M, N;
+    static int[][] map;
 
-	public static void main(String[] args) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st;
+    public static void main(String[] args) throws IOException {
+        BufferedReader br =  new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
 
-		st = new StringTokenizer(br.readLine());
-		int n = Integer.parseInt(st.nextToken());
-		int m = Integer.parseInt(st.nextToken());
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
 
-		map = new int[n][m];
-		visited = new boolean[n][m];
-		dist = new int[n][m];
+        map = new int[N][M];
 
-		for (int i = 0; i < n; i++) {
-			char[] nums = br.readLine().toCharArray();
-			for (int j = 0; j < m; j++) {
-				map[i][j] = nums[j] - '0';
-			}
-		}
+        for(int i = 0; i < N; i++){
+            String line = br.readLine();
+            for(int j = 0; j < M; j++){
+                map[i][j] = Integer.parseInt(String.valueOf(line.charAt(j)));
+            }
+        }
 
-		bfs(n, m);
+        System.out.println(bfs());
+    }
 
-	}
+    static int bfs(){
+        int[] dx = {1, -1, 0, 0};
+        int[] dy = {0, 0, -1, 1};
+        Queue<int[]> que = new LinkedList<int[]>();
 
-	static void bfs(int n, int m) {
-		int[] dx = { -1, 1, 0, 0 };
-		int[] dy = { 0, 0, -1, 1 };
+        que.add(new int[] {0, 0, 1});
+        map[0][0] = -1;
 
-		LinkedList<Integer[]> queue = new LinkedList<>();
+        while(!que.isEmpty()){
+            int[] curr = que.poll();
+            int cx = curr[0], cy = curr[1], dis = curr[2];
 
-		int currDist = 1;
-		visited[0][0] = true;
-		queue.add(new Integer[] { 0, 0 });
-		dist[0][0] = currDist;
+            if (cx == N-1 && cy == M-1)
+                return dis;
 
-		while (queue.size() != 0) {
-			Integer[] curr = queue.poll();
-			int x = curr[0];
-			int y = curr[1];
+            for(int i = 0; i < 4; i++){
+                int nx = cx + dx[i];
+                int ny = cy + dy[i];
 
-			currDist = dist[x][y] + 1;
+                if(nx < 0 || ny < 0 || nx >= N || ny >= M || map[nx][ny] != 1)
+                    continue;
 
-			for (int i = 0; i < 4; i++) {
-				int nx = x + dx[i];
-				int ny = y + dy[i];
+                map[nx][ny] = -1;
+                que.add(new int[] {nx, ny, dis+1});
+            }
+        }
 
-				if (nx < 0 || nx >= n || ny < 0 || ny >= m)
-					continue;
-				if (visited[nx][ny] || map[nx][ny] == 0)
-					continue;
-
-				queue.add(new Integer[] { nx, ny });
-				visited[nx][ny] = true;
-				dist[nx][ny] = currDist;
-
-			}
-
-		}
-
-		System.out.println(dist[n - 1][m - 1]);
-
-	}
-
+        return -1;
+    }
 }
